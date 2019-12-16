@@ -13,18 +13,20 @@ Often this integration is made with technologies, like:
 - Message Brokers (Kafka, JMS, MQ, SQS, ...)
 - Database Integration
 
-All these integration strategies lead to high coupling with technical and organizational dependencies. Think of ownership, availability, resilience, 
+All these integration strategies lead to thight coupling with technical and organizational dependencies. Think of ownership, availability, resilience, changeability, and firewalls.
 
-
+:warning: TODO What makes REST Feeds great.
 
 ## Concepts
+
+:warning: TODO add some image
 
 * HTTP
 * Polling-based
 * Content-Negotiation, with JSON as default
 * Static Pages
 
-
+:warning: TODO explain the concepts
 
 ## Example
 
@@ -72,36 +74,45 @@ Further media types may be used, when supported by client and server:
 * Avro
 * any other
 
+## Pages and Polling
 
-## Filter
+:warning: TODO 
 
-Servers _may_ support filtering.
 
-Filtering is used 
 
-Entries are still included, but th payload is omitted.
-A field `"filtered": true` is added to the entry.
 
 ## Tombstone
+
+:warning: TODO 
 
 
 ## Compaction
 
 Entries may be deleted, when another entry was added to the feed with the same key.
 
+:warning: TODO 
 
 
+## Authentication
 
-##  ISO 8601
+:warning: TODO 
 
 
+## Filter
+
+Servers _may_ support filtering.
+
+:warning: TODO which query paramter
+
+Entries are still included, but th payload is omitted.
+A field `"filtered": true` is added to the entry.
 
 
 ## Design Decisions
 
 ### Static Pagination
 
-Static pages are simpler than dynamic pagination.
+Static pages are simpler than dynamic pagination with server-side filtering.
 
 - Cachable
 - Easier to implement efficiently
@@ -116,9 +127,9 @@ Exceptions to JSON:API
 - The mediatype remains `application/json` (and not `application/vnd.api+json`) for broader library support.
 - Payload of entries is embedded in a `data` object, rather in a separate `included` array.
 
-Alernatives
+Alternatives
 
-- HAL was considerd
+- HAL was considerd, but to limited.
 
 
 
