@@ -1,10 +1,10 @@
 # REST Feeds
 
-Publish data and events in independent systems using HTTP and REST.
+Publish data and events using HTTP and REST.
 
 ## Why
 
-Information systems (such as microservices or [Self-contained Systems](https://scs-architecture.org/) communicate to other systems and publish their data or events. 
+Information systems (such as microservices or [Self-contained Systems](https://scs-architecture.org/) communicate with other systems to publish their data or events. 
 E.g. when a order was made in an online shop, the order must be forwarded to the fulfillment system to ship the order.
 
 Often this integration is made with technologies, like:
@@ -13,7 +13,8 @@ Often this integration is made with technologies, like:
 - Message Brokers (Kafka, JMS, MQ, SQS, ...)
 - Database Integration
 
-All these integration strategies lead to thight coupling with technical and organizational dependencies. Think of ownership, availability, resilience, changeability, and firewalls.
+All these integration strategies lead to tight coupling with technical and organizational dependencies and all its problems. 
+Think of ownership, availability, resilience, changeability, and firewalls.
 
 :warning: TODO What makes REST Feeds great.
 
@@ -52,9 +53,7 @@ Content-Type: application/json
       "operation": "put", // put (default, if omitted) | delete
       "key": "73264289", // business object id. May be used for compaction.
       "created": "2019-12-16T08:41:59Z", // ISO 8601 UTC timestamp
-      "data": {
-
-      }
+      "payloadField1" : "xxx"
     }
   ]
 }
@@ -63,15 +62,15 @@ Content-Type: application/json
 ## Content Negotiation
 
 Every consumer and provider _must_ support the media type `application/json`.
-It is used, if the `Accept` header is missing or not supported.
+It is the default and used, when the `Accept` header is missing or not supported.
 
 Further media types may be used, when supported by client and server:
 
 * `text/html` to render feed in browser
 * `application/atom+xml` to support feed readers
+* `TODO` to support streaming
 * `multipart/mixed` to have a more HTTP native representation
-* Protobuf
-* Avro
+* `TODO` Protobuf or Avro to minimize traffic
 * any other
 
 ## Pages and Polling
@@ -79,6 +78,14 @@ Further media types may be used, when supported by client and server:
 :warning: TODO 
 
 
+## Lookup
+
+:warning: TODO 
+
+
+## Data Replication or Events
+
+:warning: TODO 
 
 
 ## Tombstone
@@ -131,5 +138,19 @@ Alternatives
 
 - HAL was considerd, but to limited.
 
+
+### Why not RSS/ATOM?
+
+:warning: TODO 
+
+RSS and ATOM are the archetypes for REST Feeds.
+Their main concepts are adopted.
+
+Yet, they where created to publish news articles in the web.
+Their model with attributes, such as `author`, `title`, or `summary` simply doesn`t fit well for general purpose data feeds.
+
+Plus, they enforce the usage of XML.
+Nowadays, it is rather common to use JSON as an exchange data format.
+Or event better, to let the client decide witch format to use.
 
 
