@@ -19,22 +19,26 @@ Think of ownership, availability, resilience, changeability, and firewalls.
 REST feeds are an alternative for data publishing between systems. 
 They use the existing HTTP infrastructure and communication patterns.
 
-## Concepts
+## REST Feeds
 
-A feed provides access to resources in a chronological sequence of changes.
+REST feeds provide access to resources in a chronological sequence of changes.
 Clients periodicly poll the feed endpoint for updates.
-The server sends paged collections of data and presents a next link.
+The server sends paged collections of data and presents a _next_ link.
 
-![rest-feeds.svg](rest-feeds.svg)
+A REST feed complies to these principles:
 
-* HTTP
-* Polling-based
-* Paged Queries
+* HTTP(S) as transfer protocol
+* Polling-based, GET requests only
+* Linked Pages, with hypermedia link to the next page, if available
 * Content-Negotiation, with JSON as default
 
-:warning: TODO explain the concepts
+REST feeds enable asynchronously decoulped systems without shared infrastructure.
 
 ## Example
+
+![rest-feeds](rest-feeds.svg)
+
+:warning: Fit svg to example
 
 ```
 GET /orders?offset=123
