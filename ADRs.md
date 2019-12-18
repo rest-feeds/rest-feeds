@@ -5,7 +5,10 @@
 ### Long Polling
 
 A primary concern in using http feeds is latency with client side polling.
-The long polling 
+
+Long polling provides near-zero latency, but has higher demands on the server side, as the requests must be kept open.
+This should not be a problem for few clients (< 100) and should be feasible for [many parallel clients](https://en.wikipedia.org/wiki/C10k_problem) with reactive implementations.
+
 
 ### Offset Querying
 
