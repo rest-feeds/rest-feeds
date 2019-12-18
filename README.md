@@ -2,6 +2,58 @@
 
 Publish data and events using HTTP and REST.
 
+This site describes the concept of REST Feeds and proposes a data model.
+
+
+
+## Example
+
+A REST feed provide access to resources in a chronological sequence of changes.
+
+```http
+GET /orders
+Accept: application/json
+
+200 OK
+Content-Type: application/json
+[{
+  "id": "11b592ae-490f-4c07-a174-04db33c2df70",
+  "next": "/orders?offset=126",
+  "type": "application/vnd.com.example.order",
+  "uri": "/orders/123456",
+  "method": "PUT",
+  "timestamp": "2019-12-16T08:41:59Z",
+  "data": {
+    "foo": "bar"
+  }
+},{
+  "id": "64e11a7a-0e40-426c-8d81-259d6f6ab74e",
+  "next": "/orders?offset=127",
+  "type": "application/vnd.com.example.order",
+  "uri": "/orders/777777",
+  "method": "PUT",
+  "timestamp": "2019-12-16T09:12:421Z",
+  "data": {
+    "foo": "baz"
+  }
+}]
+```
+
+The number of items in the response may be limited.
+Repeat the request with the `next` link of the last processed item. 
+
+```http
+GET /orders?offset=127
+Accept: application/json
+
+200 OK
+Content-Type: application/json
+[]
+```
+
+The server uses [long polling](Long-Polling).
+When there are no newer items, the server holds the connection open  until new data or a timeout arrives.
+
 ## Why
 
 Independent information systems, such as microservices or [Self-contained Systems](https://scs-architecture.org/), communicate with other systems to publish data or events. 
@@ -22,84 +74,19 @@ They use the existing HTTP infrastructure and communication patterns.
 ## REST Feeds
 
 REST feeds provide access to resources in a chronological sequence of changes.
-Clients periodically poll the feed endpoint for updates.
-The server sends paged collections of data and presents a _next_ link.
+Feed items are immutable.
+New items are always appended.
+Clients poll the feed endpoint for new items.
 
 A REST feed complies to these principles:
 
 * HTTP(S) as transfer protocol
-* Polling-based, GET requests only
-* Linked Pages, with hypermedia link to the next page, if available
+* Polling-based, client initiated GET requests, only
+* Long Polling, the client gets updates immediatelly, without delay
+* Hypermedia link, to the next page
 * Content-Negotiation, with `application/json` as default
 
 REST feeds enable asynchronously decoulped systems without shared infrastructure.
-
-## Example
-
-![rest-feeds](rest-feeds.svg)
-
-:warning: Fit svg to example
-
-Start reading the feed with or without a position as offset:
-
-```http
-GET /orders?offset=123
-Accept: application/json
-
-200 OK
-Content-Type: application/json
-{
-  "links": {
-    "self": "/orders?offset=123",
-    "next": "/orders?offset=126"
-  },
-  "items": [
-    {
-      "position": 124,
-      "meta": {
-        "type": "com.example.order",
-        "id": "123456",
-        "operation": "put",
-        "created": "2019-12-16T08:41:59Z",
-        "idempotencyKey": "11b592ae-490f-4c07-a174-04db33c2df70"
-      },
-      "data": {
-        "foo": "bar"
-      }
-    },
-    {
-      "position": 126,
-      "meta": {
-        "type": "com.example.order",
-        "id": "777777",
-        "operation": "put",
-        "created": "2019-12-16T09:12:421Z",
-        "idempotencyKey": "64e11a7a-0e40-426c-8d81-259d6f6ab74e"
-      },
-      "data": {
-        "foo": "baz"
-      }
-    }
-  ]
-}
-```
-
-This is the end of feed (the `items` array is empty and there is no `next` link).
-Poll every N seconds, until new items are available: 
-
-```http
-GET /orders?offset=126
-Accept: application/json
-
-200 OK
-Content-Type: application/json
-{
-  "links": {
-    "self": "/orders?offset=126"
-  },
-  "items": []
-}
-```
 
 ## Data Feeds and Event Feeds
 
@@ -113,19 +100,19 @@ Usually a data feed contains only entries of one `type`.
 
 Typical examples: 
 
-- _Customers_
-- _Products_
-- _Stock_
+- Customers
+- Products
+- Stock
 
 Every update to the domain object leads to a new entry of the full current state in the feed.
 
-The feed must contain every domain object (identified through its `id`) at least once.
-Outdated entries may be [compacted](#Compaction).
+A data feed must contain every domain object (identified through its `uri`) at least once. 
+Outdated items may be compacted.
 
 ### Event Feeds
 
 _Event feeds_ are used to publish [domain events](https://www.innoq.com/en/blog/domain-events-versus-event-sourcing/#domainevents) that have happened in a domain.
-Downstream systems can trigger processes.
+Downstream systems may trigger processes based on these events.
 Event feeds often contain different entry `type`s. 
 
 Typical examples: 
@@ -134,50 +121,37 @@ Typical examples:
 - _OrderShipped_
 - _AccountLocked_
 
-Every event has a unique `id`.
-Usually there is no compaction, but the feed may cut off once the domain events are useless.
+Usually there is no compaction in event feeds, but events may be deleted once they are outdated or useless.
 
 
 ## Feed Endpoint
 
-The feed endpoint _must_ support fetching `items` without any query parameters, starting with the first items in ascending order.
+The feed endpoint _must_ support fetching items without any query parameters, starting with the first items in ascending order.
 
 The feed endpoint _may_ choose to limit the number of items returned in a response to a subset of the whole set available. 
 The limit is defined by the server.
 
-The feed endpoint _must_ add a `next` link, when the returned `items` array is not empty.
-The `next` Link must include an `offset` query parameter with the highest `position` in the current page. 
-The feed endpoint must omit the `next` link, when the returned `items` array is empty.
+The feed endpoint _must_ add a `next` link to every returned item.
+The `next` Link must return all subsequent items.
 
-The feed endpoint _must_ support fetching items starting after a request position using the `offset` query paramter.
 
-The feed endpoint _must_ add a `self` link with the requested offset.
 
 ## Client Behaviour
 
 The initial stored link is the feed endpoint URL without query parameters.
 
-In an endless loop:
-- call the stored link 
-- process all returned `items`
-- if a `next` link is present, this link is stored in a persistent repository
-- if a `next` link is not present, sleep for N seconds
-
 Pseudocode:
 
-```
+```python
 link = "https://feed.example.com/orders"
 while true
   response = GET link
-  for each item in response.items
+  for item in response:
     process item
-  if response.links.next exists
-    link = response.links.next
-  else
-    sleep N seconds
+    link = item.next
 ```
 
-The client has the responsibility to persist the returned `next` link.
+The client has the responsibility to persist the `next` link of the last processed item.
 The client`s item handling must be idempotent, as the processing of further items or the persistence operation may fail. 
 
 
