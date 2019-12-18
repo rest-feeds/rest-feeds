@@ -1,14 +1,13 @@
 # REST Feeds
 
-Publish data and events using HTTP and REST.
+Publish data and events asynchronously using HTTP and REST.
 
-This site describes the concept of REST Feeds and proposes a data model.
-
+This site describes the concept of REST feeds and proposes a data model.
 
 
 ## Example
 
-A REST feed provide access to resources in a chronological sequence of changes.
+A REST feed provides access to resources in a chronological sequence of changes.
 
 ```http
 GET /orders
@@ -39,7 +38,6 @@ Content-Type: application/json
 }]
 ```
 
-The number of items in the response may be limited.
 Repeat the request with the `next` link of the last processed item. 
 
 ```http
@@ -51,7 +49,7 @@ Content-Type: application/json
 []
 ```
 
-The server uses [long polling](Long-Polling).
+The server uses [long polling](#feed-endpoint).
 When there are no newer items, the server holds the connection open  until new data or a timeout arrives.
 
 ## Why
@@ -77,18 +75,16 @@ REST feeds provide access to resources in a chronological sequence of changes.
 Feed items are immutable.
 New items are always appended.
 Clients poll the feed endpoint for new items.
+With long polling, the client gets updates immediatelly without delay.
 
 A REST feed complies to these principles:
 
 * HTTP(S) as transfer protocol
 * Polling-based, client initiated GET requests, only
-* Long Polling, the client gets updates immediatelly, without delay
-* Hypermedia link, to the next page
+* Paged with link to the next page
 * Content-Negotiation, with `application/json` as default
 
 REST feeds enable asynchronously decoulped systems without shared infrastructure.
-
-## Data Feeds and Event Feeds
 
 REST feeds supports both, data feeds and event feeds.
 
@@ -100,9 +96,9 @@ Usually a data feed contains only entries of one `type`.
 
 Typical examples: 
 
-- Customers
-- Products
-- Stock
+- _Customers_
+- _Products_
+- _Stock_
 
 Every update to the domain object leads to a new entry of the full current state in the feed.
 
@@ -132,9 +128,11 @@ The feed endpoint _may_ choose to limit the number of items returned in a respon
 The limit is defined by the server.
 
 The feed endpoint _must_ add a `next` link to every returned item.
-The `next` Link must return all subsequent items.
+The `next` Link must return subsequent items.
 
-
+The feed endpoint _must_ implement [long polling](https://en.wikipedia.org/wiki/Push_technology#Long_polling).
+If the server has no newer items, the server holds the request open until a new item arrive and then immediatelly send the response.
+The server _should_ send an empty response, if no new item arrived after N seconds (5 seconds recommended).
 
 ## Client Behaviour
 
@@ -144,54 +142,36 @@ Pseudocode:
 
 ```python
 link = "https://feed.example.com/orders"
-while true
+while true:
   response = GET link
   for item in response:
     process item
     link = item.next
 ```
 
+Note that there is no sleep step necessary.
+
 The client has the responsibility to persist the `next` link of the last processed item.
+
 The client`s item handling must be idempotent, as the processing of further items or the persistence operation may fail. 
 
 
 ## Model
 
-The response contains two top level elements: A `links` object and an `items` array.
+The response contains an array of _items_.
 
-### Links
 
-Link    | Description
----     | ---
-`self`  | The link of the current page. Poll this link periodically with some delay, when no `next` link is set.
-`next`  | The link indicates, that more data is available. Call this link immediatelly when all items have been processed.
-
-### Items
-
-Field    | Type   | Optional  | Description
+Field    | Type   | Mandatory | Description
 ---      | ---    | ---       | ---
-`position` | Number :warning: | Mandatory | The `position` must be strictly monotonic increasing. Values may be skipped. Used to query feed items.
-`meta`   | Object | Mandatory | Metadata about the item.
-`links`  | Object | Optional  | Links to this item.
-`data`   | Object | Optional  | The payload of the item. May be missing, e.g. when the item represents a tombstone.
-
-
-### Meta
-
-Field    | Type   | Optional  | Description
----      | ---    | ---       | ---
-`type`   | String | Mandatory | The type of the item. A feed may contain different item types, especially if it is an event feed. It is recommended to use a namespace, such as a hierarchical naming pattern.
-`id` :warning:    | String | Mandatory | An identifier for this resource. In data feeds this is usually a business object id. In event feeds this is an event id. 
-`operation` | String | Optional | `put` indicates that the resource for the _id_ was created or updated. `delete` indicates that the resource for the _id_ was deleted. Defaults to `put`, if omitted. 
-`created` | String | Mandatory | The timestamp of the item addition to the feed. ISO 8601 UTC date and time format.
-`idempotencyKey` | String | Optional | A unique value (such as a UUID) for this item to support idempotency handling in downstream systems.
+`id`     | String | Mandatory | A unique value (such as a UUID) for this item. Can be used to implement deduplication/idempotency handling in downstream systems.
+`next`   | String | Mandatory | A link to subsequent items (without the present item).
+`type`   | String | Mandatory | The type of the item. Usually used to deserialze the payload. A feed may contain different item types, especially if it is an event feed. It is recommended to use a namespaced [media type](https://en.wikipedia.org/wiki/Media_type).
+`uri`    | String | Mandatory | A [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) to this resource. Doesn't have to be unique within the feed. Doesn`t need to actually exist.
+`method` | String | Optional | `PUT` indicates that the resource for the _uri_ was created or updated. `DELETE` indicates that the resource for the _uri_ was deleted. Defaults to `PUT`, if omitted. 
+`timestamp` | String | Mandatory | The item addition timestamp. ISO 8601 UTC date and time format.
+`data`   | Object | Optional  | The payload of the item. May be missing, e.g. when the method was `DELETE`.
 
 Further meta data may be added, e.g. for traceability.
-
-## Pages and Polling
-
-:warning: TODO 
-
 
 
 ## Content Negotiation
@@ -211,17 +191,30 @@ Further media types may be used, when supported by both, client and server:
 
 
 
-## Tombstone
+## Deletion
 
-:warning: TODO 
+When a domain object was deleted ([GDPR](https://gdpr-info.eu/)), the server _must_ append a `DELETE` item with the same `uri` as domain object to delete.
 
+Clients _must_ delete this domain object or otherwise handle the removal.
+
+```
+{
+  "id": "8a22af5e-d9ea-4e7f-a907-b5e8687800fd",
+  "next": "/orders?offset=321",
+  "type": "application/vnd.com.example.order",
+  "uri": "/orders/777777",
+  "method": "DELETE",
+  "timestamp": "2019-12-17T07:07:777Z"
+}
+```
+
+The server _should_ start a [compaction](#compaction) run afterwards to delete previous items for the same URI.
 
 ## Compaction
 
-Items may be deleted from the feed, when another item was added to the feed with the same `id`.
+Items _may_ be deleted from the feed, when another item was added to the feed with the same `uri`.
 
-This leads to sparse `position`s.
-The server _must_ handle offset requests, when the requested position has been deleting by returning the next higher positions.
+The server _must_ handle next links, when the requested item has been deleting by returning the next higher items.
 
 ## Authentication
 
@@ -230,7 +223,7 @@ Feed endpoints _may_ be protected with [HTTP authentication](https://developer.m
 The most common authentication schemes are [Basic](https://tools.ietf.org/html/rfc7617) and [Bearer](https://tools.ietf.org/html/rfc6750).
 
 The server _may_ filter feed items based on the principal.
-When filtering is applied, caching may be unfeasible.
+When filtering is applied, [caching](#caching) may be unfeasible.
 
 
 ## Filter
@@ -243,61 +236,14 @@ Example:
 GET /orders?offset=123&filter[type]=com.example.order&filter[id]=123456,123457
 ```
 
-When filtering is applied, caching may be unfeasible.
+When filtering is applied, [caching](#caching) may be unfeasible.
 
-## Caching Strategies
+## Caching
 
-https://wiki.innoq.com/display/CC/FINT+2.+Feed+Basics#FINT2.FeedBasics-2.5.Cachingstrategy
-
-## Long Polling
-
-The server _may_ support long-polling, especially when latency is a major issue.
-
-:warning: TODO 
+Feed endpoints _may_ set a `Cache-Control: public, max-age=31536000` [header](https://devcenter.heroku.com/articles/increasing-application-performance-with-http-cache-headers), when a page is full and will not be modified any more.
 
 
-## FAQ
+## More information
 
-
-### Why not RSS/ATOM?
-
-[RSS](http://www.rssboard.org/rss-specification) and [ATOM](https://tools.ietf.org/html/rfc4287) are the archetypes for REST feeds.
-Their main concepts are adopted.
-
-They where created to publish news articles and podcasts in the web.
-Their model with attributes, such as `author`, `title`, or `summary` simply doesn`t fit well for data and event feeds. Pagination is not specified.
-
-Plus, they enforce the usage of XML.
-Nowadays, it is rather common to use JSON as an exchange data format.
-Or event better, to let the client decide witch format to use.
-The adoption [jsonfeed.org](https://jsonfeed.org/) was never widly used and is still focusing in articles.
-
-
-
-## Design Decisions
-
-### Offset Querying
-
-We use dynamic offset querying of the next feed items using the position as offset.
-
-Discussed alternatives:
-
-* Static linked pages, but higher traffic while polling last page and to limited for filtering.
-
-### Plain JSON
-
-We use plain `application/json` as media type.
-
-Discussed alternatives:
-
-- [JSON:API](https://jsonapi.org/) has sensible defaults to representante collection data in JSON.
-Many concepts are adopted. But shortcomings, such as the `included` array for inline data and the `application/vnd.api+json` media type.
-- [HAL](http://stateless.co/hal_specification.html), but to limited and not widly supported.
-- [JSON-LD](https://json-ld.org/), but not widly adopted.
-- [Collection+JSON](http://amundsen.com/media-types/collection/), but unnecessary complex nesting.
-
-### Server defined limit
-
-The page limit is defined by server and cannot be set by the client.
-
-This this is simple, protects the server from to large data sets and DoS, enables caching and enables the server to choose optimized storage systems.
+- [FAQ](FAQ.md)
+- [Design decisions](ADRs.md)
