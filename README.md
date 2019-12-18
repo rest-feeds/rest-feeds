@@ -30,7 +30,7 @@ A REST feed complies to these principles:
 * HTTP(S) as transfer protocol
 * Polling-based, GET requests only
 * Linked Pages, with hypermedia link to the next page, if available
-* Content-Negotiation, with JSON as default
+* Content-Negotiation, with `application/json` as default
 
 REST feeds enable asynchronously decoulped systems without shared infrastructure.
 
