@@ -73,7 +73,7 @@ Content-Type: application/json
         "type": "com.example.order",
         "id": "777777",
         "operation": "put",
-        "created": "2019-12-16T09:12:421Z"
+        "created": "2019-12-16T09:12:421Z",
         "idempotencyKey": "64e11a7a-0e40-426c-8d81-259d6f6ab74e"
       },
       "data": {
@@ -268,6 +268,8 @@ Example:
 ```
 GET /orders?offset=123&filter[type]=com.example.order&filter[id]=123456,123457
 ```
+
+When filtering is applied, caching may be unfeasible.
 
 ## Caching Strategies
 
