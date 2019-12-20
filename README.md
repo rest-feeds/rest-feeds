@@ -63,7 +63,7 @@ Content-Type: application/json
   "next": "/movies?offset=129",
   "type": "application/vnd.org.themoviedb.movie",
   "uri": "/movies/12",
-  "method": "DELETE"
+  "method": "DELETE",
   "timestamp": "2019-12-18T17:00:786Z"
 }]
 ```
