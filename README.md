@@ -39,7 +39,6 @@ Content-Type: application/json
 ```
 
 Repeat the request with the `next` link of the last processed item. 
-
 Note that this is an example of a [data feed](#data-feed) where resources can be updated and deleted:
 
 ```http
@@ -259,7 +258,7 @@ The server _should_ start a [compaction](#compaction) run afterwards to delete p
 
 ## Caching
 
-Feed endpoints _may_ set a `Cache-Control: public, max-age=31536000` [header](https://devcenter.heroku.com/articles/increasing-application-performance-with-http-cache-headers), when a page is full and will not be modified any more.
+Feed endpoints _may_ set an [appropriate](https://devcenter.heroku.com/articles/increasing-application-performance-with-http-cache-headers) response headers, such as `Cache-Control: public, max-age=31536000` , when a page is full and will not be modified any more.
 
 
 ## More information
