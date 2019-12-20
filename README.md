@@ -116,8 +116,6 @@ A REST feed complies to these principles:
 
 REST feeds enable asynchronously decoulped systems without shared infrastructure.
 
-REST feeds supports both, data feeds and event feeds.
-
 ### Data Feeds
 
 _Data feeds_ are used to share resources (master data, domain objects, aggregates) with other systems for data replication. 
