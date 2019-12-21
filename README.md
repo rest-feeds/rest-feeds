@@ -81,7 +81,7 @@ Content-Type: application/json
 []
 ```
 
-The client continues polling this link until new items are recevied.
+The client continues polling this link until new items are received.
 
 ## Why
 
