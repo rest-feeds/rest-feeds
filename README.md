@@ -194,7 +194,7 @@ Field    | Type   | Mandatory | Description
 `next`   | String | Mandatory | A link to subsequent items. Fetching the link returns a (paged) collection with subsequent items (without the current item). May be absolute or relative.
 `type`   | String | Mandatory | The type of the item. Usually used to deserialize the payload. A feed may contain different item types, especially if it is an event feed. It is recommended to use a namespaced [media type](https://en.wikipedia.org/wiki/Media_type).
 `resource` | String | Optional | A [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) to the resource, the feed item refers to. Doesn't have to be unique within the feed.
-`method` | String | Optional | `PUT` indicates that the _resource_ was created or updated. `DELETE` indicates that the  _resource_ was deleted. Defaults to `PUT`.
+`method` | String | Optional | The HTTP equivalent method type that the feed item performs on the `resource`. `PUT` indicates that the _resource_ was created or updated. `DELETE` indicates that the  _resource_ was deleted. Defaults to `PUT`.
 `timestamp` | String | Mandatory | The item addition timestamp. ISO 8601 UTC date and time format.
 `data`   | Object | Optional  | The payload of the item. May be missing, e.g. when the method was `DELETE`.
 
