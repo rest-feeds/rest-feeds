@@ -19,7 +19,7 @@ Content-Type: application/json
   "id": "11b592ae-490f-4c07-a174-04db33c2df70",
   "next": "/movies?offset=126",
   "type": "application/vnd.org.themoviedb.movie",
-  "uri": "/movies/18",
+  "resource": "/movies/18",
   "timestamp": "2019-12-16T08:41:519Z",
   "data": {
     "original_title":"The Fifth Element",
@@ -29,7 +29,7 @@ Content-Type: application/json
   "id": "64e11a7a-0e40-426c-8d81-259d6f6ab74e",
   "next": "/movies?offset=127",
   "type": "application/vnd.org.themoviedb.movie",
-  "uri": "/movies/12",
+  "resource": "/movies/12",
   "timestamp": "2019-12-16T09:12:421Z",
   "data": {
     "original_title":"Finding Nemo",
@@ -51,7 +51,7 @@ Content-Type: application/json
   "id": "756e21c9-4ebd-4354-8f7d-85cd7d2bc4ec",
   "next": "/movies?offset=128",
   "type": "application/vnd.org.themoviedb.movie",
-  "uri": "/movies/18",
+  "resource": "/movies/18",
   "timestamp": "2019-12-17T11:09:122Z",
   "data": {
     "original_title":"The Fifth Element",
@@ -61,7 +61,7 @@ Content-Type: application/json
   "id": "e510d24e-bf06-4f6a-b6db-5744f6ff2591",
   "next": "/movies?offset=129",
   "type": "application/vnd.org.themoviedb.movie",
-  "uri": "/movies/12",
+  "resource": "/movies/12",
   "method": "DELETE",
   "timestamp": "2019-12-18T17:00:786Z"
 }]
@@ -128,7 +128,7 @@ Typical examples:
 
 Every update to the resource leads to a new entry of the full current state in the feed.
 
-A data feed must contain every resource (identified through its `uri`) at least once. 
+A data feed must contain every resource (identified through its `resource`) at least once. 
 
 ### Event Feeds
 
@@ -191,10 +191,10 @@ The response contains an array of _items_.
 Field    | Type   | Mandatory | Description
 ---      | ---    | ---       | ---
 `id`     | String | Mandatory | A unique value (such as a UUID) for this item. Can be used to implement deduplication/idempotency handling in downstream systems.
-`next`   | String | Mandatory | A link to subsequent items. Fetching the link returns a (paged) collection with subsequent items (without the current item).
+`next`   | String | Mandatory | A link to subsequent items. Fetching the link returns a (paged) collection with subsequent items (without the current item). May be absolute or relative.
 `type`   | String | Mandatory | The type of the item. Usually used to deserialize the payload. A feed may contain different item types, especially if it is an event feed. It is recommended to use a namespaced [media type](https://en.wikipedia.org/wiki/Media_type).
-`uri`    | String | Optional | A [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) to this resource. Doesn't have to be unique within the feed.
-`method` | String | Optional | `PUT` indicates that the resource for the _uri_ was created or updated. `DELETE` indicates that the resource for the _uri_ was deleted. Defaults to `PUT`.
+`resource` | String | Optional | A [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) to the resource, the feed item refers to. Doesn't have to be unique within the feed.
+`method` | String | Optional | `PUT` indicates that the _resource_ was created or updated. `DELETE` indicates that the  _resource_ was deleted. Defaults to `PUT`.
 `timestamp` | String | Mandatory | The item addition timestamp. ISO 8601 UTC date and time format.
 `data`   | Object | Optional  | The payload of the item. May be missing, e.g. when the method was `DELETE`.
 
@@ -231,7 +231,7 @@ When filtering is applied, [caching](#caching) may be unfeasible.
 
 _Compaction is usually only relevant in [data feeds](#data-feeds)._
 
-Items _may_ be deleted from the feed, when another item was added to the feed with the same `uri`.
+Items _may_ be deleted from the feed, when another item was added to the feed with the same `resource` URI.
 
 The server _must_ handle next links, when the requested item has been deleting by returning the next higher items.
 
@@ -239,7 +239,7 @@ The server _must_ handle next links, when the requested item has been deleting b
 
 _Deletion is usually only relevant in [data feeds](#data-feeds)._
 
-When a resource was deleted, the server _must_ append a `DELETE` item with the same `uri` as resource to delete.
+When a resource was deleted, the server _must_ append a `DELETE` item with the same `resource` URI as resource to delete.
 
 Clients _must_ delete this resource or otherwise handle the removal.
 
@@ -254,7 +254,7 @@ Clients _must_ delete this resource or otherwise handle the removal.
 }
 ```
 
-The server _should_ start a [compaction](#compaction) run afterwards to delete previous items for the same URI.
+The server _should_ start a [compaction](#compaction) run afterwards to delete previous items for the same resource.
 
 ## Caching
 
