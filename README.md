@@ -1,4 +1,4 @@
-# REST Feeds
+# rest-feeds
 
 Publish data and events using HTTP and REST.
 
