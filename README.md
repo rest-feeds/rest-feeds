@@ -41,7 +41,7 @@ Content-Type: application/json
 Repeat the request with the `next` link of the last processed item. 
 Note that this is an example of a [data feed](#data-feed) where resources can be updated and deleted:
 
-```http
+```
 GET /movies?offset=127
 Accept: application/json
 
