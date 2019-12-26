@@ -9,7 +9,7 @@ This site describes the [concept](#rest-feeds-1) of REST feeds and proposes a [d
 
 A REST feed provides access to resources in a chronological sequence of changes.
 
-```http
+```
 GET /movies
 Accept: application/json
 
@@ -72,7 +72,7 @@ When there are no newer items, the server holds the connection open until new da
 
 Example for no new data after x seconds:
 
-```http
+```
 GET /movies?offset=129
 Accept: application/json
 
