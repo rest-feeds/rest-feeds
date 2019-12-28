@@ -74,7 +74,7 @@ Content-Type: application/json
 The server implements [long polling](#feed-endpoint).
 When there are no newer items, the server holds the connection open until new data or a timeout arrives. 
 
-Example for no new data after x seconds:
+Example for no new data after 5 seconds:
 
 ```
 GET /movies?offset=129
