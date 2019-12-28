@@ -237,6 +237,10 @@ _Compaction is usually only relevant in [data feeds](#data-feeds)._
 
 Items _may_ be deleted from the feed, when another item was added to the feed with the same `resource` URI.
 
+In data feeds, new feed items include the full current state of the resource. 
+Older feed items for the same resource are obsolete. 
+It is good practice to keep the feed small to enable a quick synchronization of new clients.
+
 The server _must_ handle next links, when the requested item has been deleting by returning the next higher items.
 
 ## Deletion
