@@ -2,7 +2,7 @@
 
 Publish data and events using HTTP and REST.
 
-This site describes the [concept](#rest-feeds-1) of REST feeds, specifies [server](#feed-endpoint) and [client](#client-behaviour) behavior, and proposes a [data model](#model).
+This site describes the [concept](#rest-feeds-1) of REST feeds, specifies [server](#feed-endpoint) and [client](#feed-clients) behavior, and proposes a [data model](#model).
 
 Code & Libraries:
 - [restfeed-server-java](https://github.com/rest-feeds/restfeed-server-java) 
@@ -164,7 +164,7 @@ If the server has no newer items, the server holds the request open until new it
 
 The server _should_ send an empty response if no new item arrived after N seconds (5 seconds recommended).
 
-## Client Behaviour
+## Feed Clients
 
 The initially stored link is the feed endpoint URL without query parameters.
 
