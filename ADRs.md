@@ -1,6 +1,6 @@
-## Design Decisions
+# Design Decisions
 
-### Long Polling
+## Long Polling
 
 Long polling significantly simplifies the client algorithm as the client does not need to implement different handling if there are further items in the feed available. There is no sleep step involved in normal processing. Long polling minimizes latency when new items arrive in the feed.
 
@@ -12,7 +12,7 @@ This should not be a problem for a few clients (< 100) and should be feasible fo
 In a simple implementation, the server queries the database for new items in a short interval (such as 50 millis) until there are new items or a timeout occurs (> 1 seconds, < 10 seconds recommended).
 
 
-### Offset Querying
+## Offset Querying
 
 We use dynamic offset querying of the next feed items using the position as offset.
 
@@ -20,7 +20,7 @@ Discussed alternatives:
 
 * Static linked pages, but higher traffic while polling last page and to limited for filtering.
 
-### Next link at every item
+## Next link at every item
 
 Every feed item contains a next link to fetch subsequent items.
 
@@ -29,7 +29,7 @@ In case of processing or appliction error in a subsequent item on the same page,
 This significantly simplifies exception and retry handling on the client side.
 
 
-### Plain JSON
+## Plain JSON
 
 We use plain `application/json` as media type and return a simple array of items.
 
@@ -41,7 +41,7 @@ Discussed alternatives:
 - [Collection+JSON](http://amundsen.com/media-types/collection/), but unnecessary complex nesting.
 
 
-### Server defined limit
+## Server defined limit
 
 The page limit is defined by server and should be set sized reasonable based on the payload size.
 The actual page limit may vary for different pages.
@@ -51,7 +51,7 @@ This this is simple, protects the server from too large data loads and DoS, enab
 Feed endpoints _may_ choose to support a `limit` query parameter, e.g. for low bandwidth clients.
 The server _may_ ignore or override the limit. The server _should_ always bound the upper limit.
 
-### No home document
+## No home document
 
 We decided against a home document (such as [JSON Home](https://mnot.github.io/I-D/json-home/)).
 
