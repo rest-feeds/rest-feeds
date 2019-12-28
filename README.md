@@ -252,7 +252,7 @@ Clients _must_ delete this resource or otherwise handle the removal.
   "id": "8a22af5e-d9ea-4e7f-a907-b5e8687800fd",
   "next": "/movies?offset=321",
   "type": "application/vnd.org.themoviedb.movies",
-  "uri": "/movies/777777",
+  "resource": "/movies/777777",
   "method": "DELETE",
   "timestamp": "2019-12-17T07:07:777Z"
 }
