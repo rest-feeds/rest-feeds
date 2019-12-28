@@ -2,7 +2,7 @@
 
 Publish data and events using HTTP and REST.
 
-This site describes the [concept](#rest-feeds-1) of REST feeds, specifies the [server](#feed-endpoint) and [client](#client-behaviour) behavior, and proposes a [data model](#model).
+This site describes the [concept](#rest-feeds-1) of REST feeds, specifies [server](#feed-endpoint) and [client](#client-behaviour) behavior, and proposes a [data model](#model).
 
 Code & Libraries:
 - [restfeed-server-java](https://github.com/rest-feeds/restfeed-server-java) 
