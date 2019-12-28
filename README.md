@@ -4,6 +4,10 @@ Publish data and events using HTTP and REST.
 
 This site describes the [concept](#rest-feeds-1) of REST feeds and proposes a [data model](#model).
 
+Code & Libraries:
+- [restfeed-server-java](https://github.com/rest-feeds/restfeed-server-java) 
+- [restfeed-server-java-example-spring](https://github.com/rest-feeds/restfeed-server-java-example-spring) 
+- [restfeed-client-java](https://github.com/rest-feeds/restfeed-client-java)
 
 ## Example
 
