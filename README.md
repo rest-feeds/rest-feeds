@@ -113,16 +113,16 @@ Clients poll the feed endpoint for new items.
 A REST feed complies to these principles:
 
 * HTTP(S) as transfer protocol
-* Polling-based, client initiated GET requests only
+* Polling-based, client-initiated GET requests only
 * Paged collections with link to the next page
 * Content-Negotiation, with `application/json` as default
 
-REST feeds enable asynchronously decoulped systems without shared infrastructure.
+REST feeds enable asynchronously decoupled systems without shared infrastructure.
 
 ### Data Feeds
 
 _Data feeds_ are used to share resources (master data, domain objects, aggregates) with other systems for data replication. 
-Usually a data feed contains only entries of one resource `type`.
+Usually, a data feed contains only entries of one resource `type`.
 
 Typical examples: 
 
@@ -150,7 +150,7 @@ Events may be deleted once they are outdated or useless.
 
 ## Feed Endpoint
 
-The feed endpoint _must_ return items in strictly ascending order of addition to the feed.
+The feed endpoint _must_ return items in a strictly ascending order of addition to the feed.
 
 The feed endpoint _must_ support fetching items without any query parameters, starting with the first items.
 
@@ -160,13 +160,13 @@ The feed endpoint _must_ add a `next` link to every returned item.
 The `next` Link must return subsequent items.
 
 The feed endpoint _must_ implement [long polling](https://en.wikipedia.org/wiki/Push_technology#Long_polling).
-If the server has no newer items, the server holds the request open until a new item arrive and then immediatelly send the response.
+If the server has no newer items, the server holds the request open until new items arrive and then immediately sends the response.
 
-The server _should_ send an empty response, if no new item arrived after N seconds (5 seconds recommended).
+The server _should_ send an empty response if no new item arrived after N seconds (5 seconds recommended).
 
 ## Client Behaviour
 
-The initial stored link is the feed endpoint URL without query parameters.
+The initially stored link is the feed endpoint URL without query parameters.
 
 Pseudocode:
 
@@ -184,7 +184,8 @@ while true:
 
 The client _must_ persist the `next` link of the last processed item.
 
-The client's item handling _must_ be idempotent (_at-least-once_ delivery semantic). The `id` _may_ be used for idempotency checks.
+The client's item handling _must_ be idempotent (_at-least-once_ delivery semantic). 
+The `id` _may_ be used for idempotency checks.
 
 The client _must_ implement an exception handler that delays the next request, to protect the server in case of connection or processing errors.
 
@@ -194,21 +195,21 @@ The response contains an array of _items_.
 
 Field    | Type   | Mandatory | Description
 ---      | ---    | ---       | ---
-`id`     | String | Mandatory | A unique value (such as a UUID) for this item. Can be used to implement deduplication/idempotency handling in downstream systems.
+`id`     | String | Mandatory | A unique value (such as a UUID) for this item. It can be used to implement deduplication/idempotency handling in downstream systems.
 `next`   | String | Mandatory | A link to subsequent items. Fetching the link returns a (paged) collection with subsequent items (without the current item). May be absolute or relative.
 `type`   | String | Mandatory | The type of the item. Usually used to deserialize the payload. A feed may contain different item types, especially if it is an event feed. It is recommended to use a namespaced [media type](https://en.wikipedia.org/wiki/Media_type).
-`resource` | String | Optional | A [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) to the resource, the feed item refers to. Doesn't have to be unique within the feed.
+`resource` | String | Optional | A [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) to the resource, the feed item refers to. It doesn't have to be unique within the feed.
 `method` | String | Optional | The HTTP equivalent method type that the feed item performs on the `resource`. `PUT` indicates that the _resource_ was created or updated. `DELETE` indicates that the  _resource_ was deleted. Defaults to `PUT`.
 `timestamp` | String | Mandatory | The item addition timestamp. ISO 8601 UTC date and time format.
 `data`   | Object | Optional  | The payload of the item. May be missing, e.g. when the method was `DELETE`.
 
-Further meta data may be added, e.g. for traceability.
+Further metadata may be added, e.g. for traceability.
 
 
 ## Content Negotiation
 
 Every consumer and provider _must_ support the media type `application/json`.
-It is the default and used, when the `Accept` header is missing or not supported.
+It is the default and used when the `Accept` header is missing or not supported.
 
 Further media types may be used, when supported by both, client and server:
 
@@ -235,7 +236,7 @@ When filtering is applied, [caching](#caching) may be unfeasible.
 
 _Compaction is usually only relevant in [data feeds](#data-feeds)._
 
-Items _may_ be deleted from the feed, when another item was added to the feed with the same `resource` URI.
+Items _may_ be deleted from the feed when another item was added to the feed with the same `resource` URI.
 
 In data feeds, new feed items include the full current state of the resource. 
 Older feed items for the same resource are obsolete. 
@@ -247,7 +248,7 @@ The server _must_ handle next links, when the requested item has been deleting b
 
 _Deletion is usually only relevant in [data feeds](#data-feeds)._
 
-When a resource was deleted, the server _must_ append a `DELETE` item with the same `resource` URI as resource to delete.
+When a resource was deleted, the server _must_ append a `DELETE` item with the `resource` URI to delete.
 
 Clients _must_ delete this resource or otherwise handle the removal.
 
@@ -266,7 +267,7 @@ The server _should_ start a [compaction](#compaction) run afterwards to delete p
 
 ## Caching
 
-Feed endpoints _may_ set an [appropriate](https://devcenter.heroku.com/articles/increasing-application-performance-with-http-cache-headers) response headers, such as `Cache-Control: public, max-age=31536000` , when a page is full and will not be modified any more.
+Feed endpoints _may_ set [appropriate](https://devcenter.heroku.com/articles/increasing-application-performance-with-http-cache-headers) response headers, such as `Cache-Control: public, max-age=31536000` , when a page is full and will not be modified anymore.
 
 
 ## More Information
