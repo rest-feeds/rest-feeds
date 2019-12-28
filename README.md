@@ -269,7 +269,7 @@ The server _should_ start a [compaction](#compaction) run afterwards to delete p
 Feed endpoints _may_ set an [appropriate](https://devcenter.heroku.com/articles/increasing-application-performance-with-http-cache-headers) response headers, such as `Cache-Control: public, max-age=31536000` , when a page is full and will not be modified any more.
 
 
-## More information
+## More Information
 
 - [FAQ](FAQ.md)
 - [Design decisions](ADRs.md)
