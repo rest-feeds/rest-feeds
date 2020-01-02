@@ -1,6 +1,6 @@
 # rest-feeds
 
-Publish data and events using HTTP and REST.
+Asynchronous data replication and event streaming with plain REST/HTTP.
 
 This site describes the [concept](#rest-feeds-1) of REST feeds, specifies [server](#feed-endpoint) and [client](#feed-clients) behavior, and proposes a [data model](#model).
 
