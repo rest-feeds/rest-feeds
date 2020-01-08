@@ -242,7 +242,7 @@ In data feeds, new feed items include the full current state of the resource.
 Older feed items for the same resource are obsolete. 
 It is good practice to keep the feed small to enable a quick synchronization of new clients.
 
-The server _must_ handle next links, when the requested item has been deleting by returning the next higher items.
+The server _must_ handle next links, when the requested item has been deleted by returning the next higher items.
 
 ## Deletion
 
