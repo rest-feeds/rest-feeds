@@ -42,6 +42,7 @@ Content-Type: application/json
 }]
 ```
 
+The number of items returned by the server is limited, e. g. to 100 items per request.
 Repeat the request with the `next` link of the last processed item. 
 Note that this is an example of a [data feed](#data-feed) where resources can be updated and deleted:
 
