@@ -81,39 +81,22 @@ Content-Type: application/json
 
 The client continues polling this link until new items are received.
 
-## Why
-
-Independent information systems, such as microservices or [Self-contained Systems](https://scs-architecture.org/), communicate with other systems to publish data or events. 
-
-Often this integration is made with technologies, like:
-
-- Synchronous API calls (REST-APIs, SOAP Web Services, BAPI, ...)
-- Message Brokers (Kafka, JMS, MQ, SQS, ...)
-- Database Integration
-
-All these integration strategies lead to tight coupling with technical and organizational dependencies and all its problems. 
-Think of ownership, availability, resilience, changeability, and firewalls.
-
-REST feeds are an alternative for data publishing between systems. 
-They use the existing HTTP infrastructure and communication patterns.
-
 ## REST Feeds
 
-REST feeds provide access to resources in a chronological sequence of changes.
-Feed items are immutable.
-New items are always appended.
-Clients poll the feed endpoint for new items.
+REST feeds provide access to resources in a chronological sequence of changes using plain HTTP(S).
 
 A REST feed complies to these principles:
 
 * HTTP(S) as transfer protocol
-* Polling-based, client-initiated GET requests only
-* Paged collections with link to the next page
+* Clients poll the feed endpoint for new items
+* Paged results with links to further items
 * Content-Negotiation, with `application/json` as default
+* Feed items are immutable.
+* Items are always appended.
 
 REST feeds enable asynchronously decoupled systems without shared infrastructure.
 
-REST feeds can be used for _data feeds_ and _event feeds_.
+REST feeds can be used for data replication (_data feeds_) and event streaming (_event feeds_).
 
 ### Data Feeds
 
@@ -130,8 +113,9 @@ Event feeds often contain different entry `type`s.
 
 Events may be deleted once they are outdated or useless.
 
+## Specification
 
-## Feed Endpoint
+### Feed Endpoint
 
 The feed endpoint _must_ return items in a strictly ascending order of addition to the feed.
 
@@ -147,7 +131,7 @@ If the server has no newer items, the server holds the request open until new it
 
 The server _should_ send an empty response if no new item arrived after N seconds (5 seconds recommended).
 
-## Feed Clients
+### Feed Clients
 
 The initially stored link is the feed endpoint URL without query parameters.
 
@@ -172,7 +156,7 @@ The `id` _may_ be used for idempotency checks.
 
 The client _must_ implement an exception handler that delays the next request, to protect the server in case of connection or processing errors.
 
-## Model
+### Model
 
 The response contains an array of _items_.
 
@@ -189,7 +173,7 @@ Field    | Type   | Mandatory | Description
 Further metadata may be added, e.g. for traceability.
 
 
-## Content Negotiation
+### Content Negotiation
 
 Every consumer and provider _must_ support the media type `application/json`.
 It is the default and used when the `Accept` header is missing or not supported.
@@ -205,7 +189,7 @@ Further media types may be used, when supported by both, client and server:
 * any other
 
 
-## Authentication
+### Authentication
 
 Feed endpoints _may_ be protected with [HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication). 
 
@@ -215,7 +199,7 @@ The server _may_ filter feed items based on the principal.
 When filtering is applied, [caching](#caching) may be unfeasible.
 
 
-## Compaction
+### Compaction
 
 When feed items include the full current state of the resource, older feed items for the same resource may be obsolete. 
 Items _may_ be deleted from the feed when another item was added to the feed with the same `resource` URI.
@@ -224,7 +208,7 @@ It is good practice to keep the feed small to enable a quick synchronization of 
 
 The server _must_ handle next links, when the requested item has been deleted by returning the next higher items.
 
-## Deletion
+### Deletion
 
 When a resource was deleted, the server _must_ append a `DELETE` item with the `resource` URI to delete.
 
@@ -243,7 +227,7 @@ Clients _must_ delete this resource or otherwise handle the removal.
 
 The server _should_ start a [compaction](#compaction) run afterwards to delete previous items for the same resource.
 
-## Caching
+### Caching
 
 Feed endpoints _may_ set [appropriate](https://devcenter.heroku.com/articles/increasing-application-performance-with-http-cache-headers) response headers, such as `Cache-Control: public, max-age=31536000`, when a page is full and will not be modified anymore.
 
