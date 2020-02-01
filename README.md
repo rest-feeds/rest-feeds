@@ -235,19 +235,14 @@ When filtering is applied, [caching](#caching) may be unfeasible.
 
 ## Compaction
 
-_Compaction is usually only relevant in [data feeds](#data-feeds)._
-
+When feed items include the full current state of the resource, older feed items for the same resource may be obsolete. 
 Items _may_ be deleted from the feed when another item was added to the feed with the same `resource` URI.
 
-In data feeds, new feed items include the full current state of the resource. 
-Older feed items for the same resource are obsolete. 
 It is good practice to keep the feed small to enable a quick synchronization of new clients.
 
 The server _must_ handle next links, when the requested item has been deleted by returning the next higher items.
 
 ## Deletion
-
-_Deletion is usually only relevant in [data feeds](#data-feeds)._
 
 When a resource was deleted, the server _must_ append a `DELETE` item with the `resource` URI to delete.
 
@@ -268,7 +263,7 @@ The server _should_ start a [compaction](#compaction) run afterwards to delete p
 
 ## Caching
 
-Feed endpoints _may_ set [appropriate](https://devcenter.heroku.com/articles/increasing-application-performance-with-http-cache-headers) response headers, such as `Cache-Control: public, max-age=31536000` , when a page is full and will not be modified anymore.
+Feed endpoints _may_ set [appropriate](https://devcenter.heroku.com/articles/increasing-application-performance-with-http-cache-headers) response headers, such as `Cache-Control: public, max-age=31536000`, when a page is full and will not be modified anymore.
 
 
 ## More Information
