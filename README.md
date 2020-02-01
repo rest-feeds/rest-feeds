@@ -81,14 +81,6 @@ Content-Type: application/json
 
 The client continues polling this link until new items are received.
 
-## Code & Libraries:
-
-- [restfeed-server-java](https://github.com/rest-feeds/restfeed-server-java) 
-- [restfeed-server-spring](https://github.com/rest-feeds/restfeed-server-spring) 
-- [restfeed-server-java-example-spring](https://github.com/rest-feeds/restfeed-server-java-example-spring) 
-- [restfeed-client-java](https://github.com/rest-feeds/restfeed-client-java)
-- [restfeed-client-spring](https://github.com/rest-feeds/restfeed-client-spring)
-
 ## Why
 
 Independent information systems, such as microservices or [Self-contained Systems](https://scs-architecture.org/), communicate with other systems to publish data or events. 
@@ -254,6 +246,15 @@ The server _should_ start a [compaction](#compaction) run afterwards to delete p
 ## Caching
 
 Feed endpoints _may_ set [appropriate](https://devcenter.heroku.com/articles/increasing-application-performance-with-http-cache-headers) response headers, such as `Cache-Control: public, max-age=31536000`, when a page is full and will not be modified anymore.
+
+## Code & Libraries
+
+- [restfeed-server-java](https://github.com/rest-feeds/restfeed-server-java) 
+- [restfeed-server-spring](https://github.com/rest-feeds/restfeed-server-spring) 
+- [restfeed-server-java-example-spring](https://github.com/rest-feeds/restfeed-server-java-example-spring) 
+- [restfeed-client-java](https://github.com/rest-feeds/restfeed-client-java)
+- [restfeed-client-spring](https://github.com/rest-feeds/restfeed-client-spring)
+
 
 
 ## More Information
