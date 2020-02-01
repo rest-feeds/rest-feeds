@@ -2,9 +2,8 @@
 
 Asynchronous data replication and event streaming with plain REST/HTTP.
 
-This site describes the [concept](#rest-feeds-1) of REST feeds, specifies [server](#feed-endpoint) and [client](#feed-clients) behavior, and proposes a [data model](#model).
+## Code & Libraries:
 
-Code & Libraries:
 - [restfeed-server-java](https://github.com/rest-feeds/restfeed-server-java) 
 - [restfeed-server-java-example-spring](https://github.com/rest-feeds/restfeed-server-java-example-spring) 
 - [restfeed-client-java](https://github.com/rest-feeds/restfeed-client-java)
@@ -120,16 +119,11 @@ A REST feed complies to these principles:
 
 REST feeds enable asynchronously decoupled systems without shared infrastructure.
 
+REST feeds can be used for _data feeds_ and _event feeds_.
+
 ### Data Feeds
 
-_Data feeds_ are used to share resources (master data, domain objects, aggregates) with other systems for data replication. 
-Usually, a data feed contains only entries of one resource `type`.
-
-Typical examples: 
-
-- _Customers_
-- _Products_
-- _Stock_
+_Data feeds_ are used to share resources (master data, domain objects, aggregates) with other systems for data replication.
 
 Every update to the resource leads to a new entry of the full current state in the feed.
 
@@ -139,12 +133,6 @@ A data feed must contain every resource (identified through its `resource`) at l
 
 _Event feeds_ are used to publish [domain events](https://www.innoq.com/en/blog/domain-events-versus-event-sourcing/#domainevents) that have happened in a domain.
 Event feeds often contain different entry `type`s. 
-
-Typical examples: 
-
-- _PaymentProcessed_
-- _OrderShipped_
-- _AccountLocked_
 
 Events may be deleted once they are outdated or useless.
 
