@@ -5,8 +5,10 @@ Asynchronous data replication and event streaming with plain REST/HTTP.
 ## Code & Libraries:
 
 - [restfeed-server-java](https://github.com/rest-feeds/restfeed-server-java) 
+- [restfeed-server-spring](https://github.com/rest-feeds/restfeed-server-spring) 
 - [restfeed-server-java-example-spring](https://github.com/rest-feeds/restfeed-server-java-example-spring) 
 - [restfeed-client-java](https://github.com/rest-feeds/restfeed-client-java)
+- [restfeed-client-spring]https://github.com/rest-feeds/restfeed-client-spring
 
 ## Example
 
