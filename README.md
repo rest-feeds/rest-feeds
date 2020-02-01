@@ -235,7 +235,7 @@ Feed endpoints _may_ set [appropriate](https://devcenter.heroku.com/articles/inc
 
 - [restfeed-server-java](https://github.com/rest-feeds/restfeed-server-java) 
 - [restfeed-server-spring](https://github.com/rest-feeds/restfeed-server-spring) 
-- [restfeed-server-java-example-spring](https://github.com/rest-feeds/restfeed-server-java-example-spring) 
+- [restfeed-server-spring-example](https://github.com/rest-feeds/restfeed-server-spring-example) 
 - [restfeed-client-java](https://github.com/rest-feeds/restfeed-client-java)
 - [restfeed-client-spring](https://github.com/rest-feeds/restfeed-client-spring)
 
