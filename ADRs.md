@@ -36,7 +36,7 @@ We use plain `application/json` as media type and return a simple array of items
 Discussed alternatives:
 
 - [JSON:API](https://jsonapi.org/), reasonable, but very nested and complex for embedded data (the `included` array). Special `application/vnd.api+json` media type.
-- [HAL](http://stateless.co/hal_specification.html), but to limited and not widly supported.
+- [HAL](http://stateless.co/hal_specification.html), but too limited and not widly supported.
 - [JSON-LD](https://json-ld.org/), but not widly adopted.
 - [Collection+JSON](http://amundsen.com/media-types/collection/), but unnecessary complex nesting.
 
@@ -46,7 +46,7 @@ Discussed alternatives:
 The page limit is defined by server and should be set sized reasonable based on the payload size.
 The actual page limit may vary for different pages.
 
-This this is simple, protects the server from too large data loads and DoS, enables caching and enables the server to choose optimized storage systems.
+This is simple, protects the server from too large data loads and DoS, enables caching and enables the server to choose optimized storage systems.
 
 Feed endpoints _may_ choose to support a `limit` query parameter, e.g. for low bandwidth clients.
 The server _may_ ignore or override the limit. The server _should_ always bound the upper limit.
