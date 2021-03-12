@@ -19,6 +19,7 @@ We use dynamic offset querying of the next feed items using the position as offs
 Discussed alternatives:
 
 * Static linked pages, but higher traffic while polling last page and to limited for filtering.
+* Use `Last-Event-ID` (as specified by server-sent events). Consequence: Position for ID must be retrievable, when entries get deleted. 
 
 ## Next link at every item
 
