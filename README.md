@@ -182,7 +182,7 @@ Further media types may be used, when supported by both, client and server:
 
 * `text/html` to render feed in browser
 * `application/atom+xml` to support feed readers
-* `text/event-stream` for server-side events
+* `text/event-stream` for server-sent events
 * `application/x-ndjson` to support streaming
 * `multipart/*` to have a more HTTP native representation
 * `application/x-protobuf` to minimize traffic
