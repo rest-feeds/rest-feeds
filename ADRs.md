@@ -37,8 +37,8 @@ We use plain `application/json` as media type and return a simple array of items
 Discussed alternatives:
 
 - [JSON:API](https://jsonapi.org/), reasonable, but very nested and complex for embedded data (the `included` array). Special `application/vnd.api+json` media type.
-- [HAL](http://stateless.co/hal_specification.html), but too limited and not widly supported.
-- [JSON-LD](https://json-ld.org/), but not widly adopted.
+- [HAL](http://stateless.co/hal_specification.html), but too limited and not widely supported.
+- [JSON-LD](https://json-ld.org/), but not widely adopted.
 - [Collection+JSON](http://amundsen.com/media-types/collection/), but unnecessary complex nesting.
 
 
