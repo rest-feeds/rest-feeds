@@ -18,7 +18,7 @@ Content-Type: application/cloudevents-batch+json
   "source" : "/movies",
   "id": "11b592ae-490f-4c07-a174-04db33c2df70",
   "time": "2019-12-16T08:41:519Z",
-  "subject": "/movies/18",
+  "subject": "18",
   "data": {
     "original_title":"The Fifth Element",
     "popularity":26.163
@@ -29,7 +29,7 @@ Content-Type: application/cloudevents-batch+json
   "source" : "/movies",
   "id": "64e11a7a-0e40-426c-8d81-259d6f6ab74e",
   "time": "2019-12-16T09:12:421Z",
-  "subject": "/movies/12",
+  "subject": "12",
   "data": {
     "original_title":"Finding Nemo",
     "popularity":23.675
@@ -53,7 +53,7 @@ Content-Type: application/cloudevents-batch+json
   "source" : "/movies",
   "id": "756e21c9-4ebd-4354-8f7d-85cd7d2bc4ec",
   "time": "2019-12-17T11:09:122Z",
-  "subject": "/movies/18",
+  "subject": "18",
   "data": {
     "original_title":"The Fifth Element",
     "popularity":27.011
@@ -63,7 +63,7 @@ Content-Type: application/cloudevents-batch+json
   "type" : "org.example.movie",
   "source" : "/movies",
   "id": "e510d24e-bf06-4f6a-b6db-5744f6ff2591",
-  "subject": "/movies/12",
+  "subject": "12",
   "time": "2019-12-18T17:00:786Z",
   "method": "DELETE"
 }]
@@ -170,7 +170,7 @@ Field    | Type   | Mandatory | Description
 `specversion`     | String | Mandatory | The currently supported CloudEvents specification version.
 `id`     | String | Mandatory | A unique value (such as a UUID) for this item. It can be used to implement deduplication/idempotency handling in downstream systems.
 `type`   | String | Mandatory | The type of the item. May be used to specify and deserialize the payload. A feed may contain different item types, especially if it is an event feed. It SHOULD be prefixed with a reverse-DNS name..
-`subject` | String | Optional | A [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) to the resource, the feed item refers to. It doesn't have to be unique within the feed. This should include a business key, such as an order number.
+`subject` | String | Optional | Key to identify the aggregate, the item refers to. It doesn't have to be unique within the feed. This should include a business key such as an order number.
 `method` | String | Optional | The HTTP equivalent method type that the feed item performs on the `subject`. `PUT` indicates that the _resource_ was created or updated. `DELETE` indicates that the  _subject_ was deleted. Defaults to `PUT`.
 `time` | String | Mandatory | The item addition timestamp. ISO 8601 UTC date and time format.
 `data`   | Object | Optional  | The payload of the item in JSON. May be missing, e.g. when the method was `DELETE`.
