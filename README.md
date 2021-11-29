@@ -2,32 +2,34 @@
 
 Asynchronous data replication and event streaming with plain REST/HTTP.
 
-## Example
+## 1-Minute Overview
 
-A REST feed provides access to resources in a chronological sequence of changes.
+A REST feed provides access to resources in a _chronological sequence of changes_.
 
 ```
 GET /movies
 Accept: application/json
 
 200 OK
-Content-Type: application/json
+Content-Type: application/cloudevents-batch+json
 [{
+  "specversion" : "1.0",
+  "type" : "org.example.movie",
+  "source" : "/movies",
   "id": "11b592ae-490f-4c07-a174-04db33c2df70",
-  "next": "/movies?offset=126",
-  "type": "application/vnd.org.themoviedb.movie",
-  "resource": "/movies/18",
-  "timestamp": "2019-12-16T08:41:519Z",
+  "time": "2019-12-16T08:41:519Z",
+  "subject": "/movies/18",
   "data": {
     "original_title":"The Fifth Element",
     "popularity":26.163
   }
 },{
+  "specversion" : "1.0",
+  "type" : "org.example.movie",
+  "source" : "/movies",
   "id": "64e11a7a-0e40-426c-8d81-259d6f6ab74e",
-  "next": "/movies?offset=127",
-  "type": "application/vnd.org.themoviedb.movie",
-  "resource": "/movies/12",
-  "timestamp": "2019-12-16T09:12:421Z",
+  "time": "2019-12-16T09:12:421Z",
+  "subject": "/movies/12",
   "data": {
     "original_title":"Finding Nemo",
     "popularity":23.675
@@ -35,33 +37,35 @@ Content-Type: application/json
 }]
 ```
 
-The number of items returned by the server is limited, e. g. to 100 items per request.
-Repeat the request with the `next` link of the last processed item. 
-Note that this is an example of a [data feed](#data-feed) where resources can be updated and deleted:
+The number of items returned by the server is limited, e. g. to 1000 items per request.
+Repeat the request with the id that has been processed as `lastEventId` query parameter. 
+Note that this is an example of an [Aggregate Feed](#aggregate-feed) where resources can be updated and deleted:
 
 ```
-GET /movies?offset=127
+GET /movies?lastEventId=64e11a7a-0e40-426c-8d81-259d6f6ab74e
 Accept: application/json
 
 200 OK
-Content-Type: application/json
+Content-Type: application/cloudevents-batch+json
 [{
+  "specversion" : "1.0",
+  "type" : "org.example.movie",
+  "source" : "/movies",
   "id": "756e21c9-4ebd-4354-8f7d-85cd7d2bc4ec",
-  "next": "/movies?offset=128",
-  "type": "application/vnd.org.themoviedb.movie",
-  "resource": "/movies/18",
-  "timestamp": "2019-12-17T11:09:122Z",
+  "time": "2019-12-17T11:09:122Z",
+  "subject": "/movies/18",
   "data": {
     "original_title":"The Fifth Element",
     "popularity":27.011
   }
 },{
+  "specversion" : "1.0",
+  "type" : "org.example.movie",
+  "source" : "/movies",
   "id": "e510d24e-bf06-4f6a-b6db-5744f6ff2591",
-  "next": "/movies?offset=129",
-  "type": "application/vnd.org.themoviedb.movie",
-  "resource": "/movies/12",
-  "method": "DELETE",
-  "timestamp": "2019-12-18T17:00:786Z"
+  "subject": "/movies/12",
+  "time": "2019-12-18T17:00:786Z",
+  "method": "DELETE"
 }]
 ```
 
@@ -71,11 +75,11 @@ When there are no newer items, the server holds the connection open until new da
 Example for no new data after 5 seconds:
 
 ```
-GET /movies?offset=129
+GET /movies?lastEventId=e510d24e-bf06-4f6a-b6db-5744f6ff2591
 Accept: application/json
 
 200 OK
-Content-Type: application/json
+Content-Type: application/cloudevents-batch+json
 []
 ```
 
@@ -83,28 +87,28 @@ The client continues polling this link until new items are received.
 
 ## REST Feeds
 
-REST feeds provide access to resources in a chronological sequence of changes using plain HTTP(S).
+REST feeds provide access to resources in a _chronological sequence of changes_ using plain HTTP(S).
 
 A REST feed complies to these principles:
 
 * HTTP(S) as transfer protocol
 * Clients poll the feed endpoint for new items
 * Paged results with links to further items
-* Content-Negotiation, with `application/json` as default
+* Content-Negotiation, with `application/cloudevents-batch+json` as default
 * Feed items are immutable.
 * Items are always appended.
 
 REST feeds enable asynchronously decoupled systems without shared infrastructure.
 
-REST feeds can be used for data replication (_data feeds_) and event streaming (_event feeds_).
+REST feeds can be used for data replication (_aggregate feeds_) and event streaming (_event feeds_).
 
-### Data Feeds
+### Aggregate Feeds
 
-_Data feeds_ are used to share resources (master data, domain objects, aggregates) with other systems for data replication.
+_Aggregate feeds_ are used to share aggregates (aka master data, domain objects) with other systems for data replication.
 
 Every update to the resource leads to a new entry of the full current state in the feed.
 
-A data feed must contain every resource (identified through its `resource`) at least once. 
+An aggregate feeds must contain every resource (identified through its `subject`) at least once. 
 
 ### Event Feeds
 
@@ -123,8 +127,8 @@ The feed endpoint _must_ support fetching items without any query parameters, st
 
 The feed endpoint _may_ choose to limit the number of items returned in a response to a subset of the whole set available. 
 
-The feed endpoint _must_ add a `next` link to every returned item.
-The `next` Link must return subsequent items.
+The feed endpoint _must_ must support the `lastEventId` query parameter.
+It must only returns items after this event id.
 
 The feed endpoint _must_ implement [long polling](https://en.wikipedia.org/wiki/Push_technology#Long_polling).
 If the server has no newer items, the server holds the request open until new items arrive and then immediately sends the response.
@@ -144,12 +148,12 @@ while true:
     response = GET link
     for item in response:
       process item
-      link = item.next
+      link = link + setQueryParameter "lastEventId" to value item.id
   except:
     wait N seconds
 ```
 
-The client _must_ persist the `next` link of the last processed item.
+The client _must_ persist the `id` of the last processed item.
 
 The client's item handling _must_ be idempotent (_at-least-once_ delivery semantic). 
 The `id` _may_ be used for idempotency checks.
@@ -159,24 +163,25 @@ The client _must_ implement an exception handler that delays the next request, t
 ### Model
 
 The response contains an array of _items_.
+The response must comply with the [CloudEvents Specification](https://github.com/cloudevents/spec).
 
 Field    | Type   | Mandatory | Description
 ---      | ---    | ---       | ---
+`specversion`     | String | Mandatory | The currently supported CloudEvents specification version.
 `id`     | String | Mandatory | A unique value (such as a UUID) for this item. It can be used to implement deduplication/idempotency handling in downstream systems.
-`next`   | String | Mandatory | A link to subsequent items. Fetching the link returns a (paged) collection with subsequent items (without the current item). May be absolute or relative.
-`type`   | String | Mandatory | The type of the item. Usually used to deserialize the payload. A feed may contain different item types, especially if it is an event feed. It is recommended to use a namespaced [media type](https://en.wikipedia.org/wiki/Media_type).
-`resource` | String | Optional | A [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) to the resource, the feed item refers to. It doesn't have to be unique within the feed.
-`method` | String | Optional | The HTTP equivalent method type that the feed item performs on the `resource`. `PUT` indicates that the _resource_ was created or updated. `DELETE` indicates that the  _resource_ was deleted. Defaults to `PUT`.
-`timestamp` | String | Mandatory | The item addition timestamp. ISO 8601 UTC date and time format.
-`data`   | Object | Optional  | The payload of the item. May be missing, e.g. when the method was `DELETE`.
+`type`   | String | Mandatory | The type of the item. May be used to specify and deserialize the payload. A feed may contain different item types, especially if it is an event feed. It SHOULD be prefixed with a reverse-DNS name..
+`subject` | String | Optional | A [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) to the resource, the feed item refers to. It doesn't have to be unique within the feed. This should include a business key, such as an order number.
+`method` | String | Optional | The HTTP equivalent method type that the feed item performs on the `subject`. `PUT` indicates that the _resource_ was created or updated. `DELETE` indicates that the  _subject_ was deleted. Defaults to `PUT`.
+`time` | String | Mandatory | The item addition timestamp. ISO 8601 UTC date and time format.
+`data`   | Object | Optional  | The payload of the item in JSON. May be missing, e.g. when the method was `DELETE`.
 
 Further metadata may be added, e.g. for traceability.
 
 
 ### Content Negotiation
 
-Every consumer and provider _must_ support the media type `application/json`.
-It is the default and used when the `Accept` header is missing or not supported.
+Every consumer and provider _must_ support the media type `application/cloudevents-batch+json` as defined by the [CloudEvents JSON Batch Format](https://github.com/cloudevents/spec/blob/v1.0.1/json-format.md#4-json-batch-format).
+It is the default and used when the `Accept` header is missing, defined as plain `application/json` or not supported.
 
 Further media types may be used, when supported by both, client and server:
 
@@ -187,7 +192,7 @@ Further media types may be used, when supported by both, client and server:
 * `multipart/*` to have a more HTTP native representation
 * `application/x-protobuf` to minimize traffic
 * any other
-
+ 
 
 ### Authentication
 
@@ -216,12 +221,13 @@ Clients _must_ delete this resource or otherwise handle the removal.
 
 ```
 {
+  "specversion" : "1.0",
+  "type" : "org.example.movie",
+  "source" : "/movies",
   "id": "8a22af5e-d9ea-4e7f-a907-b5e8687800fd",
-  "next": "/movies?offset=321",
-  "type": "application/vnd.org.themoviedb.movies",
-  "resource": "/movies/777777",
-  "method": "DELETE",
-  "timestamp": "2019-12-17T07:07:777Z"
+  "time": "2019-12-17T07:07:777Z",
+  "subject": "/movies/777777",
+  "method": "DELETE"
 }
 ```
 
