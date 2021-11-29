@@ -226,7 +226,7 @@ Clients _must_ delete this resource or otherwise handle the removal.
   "source" : "/movies",
   "id": "8a22af5e-d9ea-4e7f-a907-b5e8687800fd",
   "time": "2019-12-17T07:07:777Z",
-  "subject": "/movies/777777",
+  "subject": "777777",
   "method": "DELETE"
 }
 ```
