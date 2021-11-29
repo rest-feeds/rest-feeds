@@ -39,7 +39,7 @@ Content-Type: application/cloudevents-batch+json
 
 The number of items returned by the server is limited, e. g. to 1000 items per request.
 Repeat the request with the id that has been processed as `lastEventId` query parameter. 
-Note that this is an example of an [Aggregate Feed](#aggregate-feed) where resources can be updated and deleted:
+Note that this is an example of an [Aggregate Feed](#aggregate-feeds) where resources can be updated and deleted:
 
 ```
 GET /movies?lastEventId=64e11a7a-0e40-426c-8d81-259d6f6ab74e
