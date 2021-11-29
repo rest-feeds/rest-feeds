@@ -180,8 +180,8 @@ Further metadata may be added, e.g. for traceability.
 
 ### Content Negotiation
 
-Every consumer and provider _must_ support the media type `application/json`.
-It is the default and used when the `Accept` header is missing or not supported.
+Every consumer and provider _must_ support the media type `application/cloudevents-batch+json` as defined by the [CloudEvents JSON Batch Format](https://github.com/cloudevents/spec/blob/v1.0.1/json-format.md#4-json-batch-format).
+It is the default and used when the `Accept` header is missing, defined as plain `application/json` or not supported.
 
 Further media types may be used, when supported by both, client and server:
 
