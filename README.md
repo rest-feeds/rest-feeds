@@ -251,6 +251,7 @@ Feed endpoints _may_ set [appropriate](https://devcenter.heroku.com/articles/inc
 __2021-11-29: Comply with CloudEvents__ 
  
 * Data Model: Add field `specversion`
+* Data Model: Remove field `next`. Specified query parameter `lastEventId` instead.
 * Data Model: Rename `timestamp` to `time`
 * Data Model: Rename `resource` to `subject`
 * Data Model: `type` should be reverse-DNS name.
