@@ -93,7 +93,7 @@ A REST feed complies to these principles:
 
 * HTTP(S) as transfer protocol
 * Clients poll the feed endpoint for new items
-* Paged results with links to further items
+* Batched results with `lastEventId` to scroll through further items
 * Content-Negotiation, with `application/cloudevents-batch+json` as default
 * Feed items are immutable.
 * Items are always appended.
@@ -104,7 +104,7 @@ REST feeds can be used for data replication (_aggregate feeds_) and event stream
 
 ### Aggregate Feeds
 
-_Aggregate feeds_ are used to share aggregates (aka master data, domain objects) with other systems for data replication.
+_Aggregate feeds_ are used to share aggregates (aka master data, domain objects) with other systems for data replication and to trigger actions.
 
 Every update to the resource leads to a new entry of the full current state in the feed.
 
