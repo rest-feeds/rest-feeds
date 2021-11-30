@@ -169,7 +169,7 @@ Field    | Type   | Mandatory | Description
 ---      | ---    | ---       | ---
 `specversion`     | String | Mandatory | The currently supported CloudEvents specification version.
 `id`     | String | Mandatory | A unique value (such as a UUID) for this item. It can be used to implement deduplication/idempotency handling in downstream systems.
-`type`   | String | Mandatory | The type of the item. May be used to specify and deserialize the payload. A feed may contain different item types, especially if it is an event feed. It SHOULD be prefixed with a reverse-DNS name..
+`type`   | String | Mandatory | The type of the item. May be used to specify and deserialize the payload. A feed may contain different item types, especially if it is an event feed. It SHOULD be prefixed with a reverse-DNS name.
 `subject` | String | Optional | Key to identify the aggregate, the item refers to. It doesn't have to be unique within the feed. This should include a business key such as an order number.
 `method` | String | Optional | The HTTP equivalent method type that the feed item performs on the `subject`. `PUT` indicates that the _resource_ was created or updated. `DELETE` indicates that the  _subject_ was deleted. Defaults to `PUT`.
 `time` | String | Mandatory | The item addition timestamp. ISO 8601 UTC date and time format.
@@ -245,6 +245,16 @@ Feed endpoints _may_ set [appropriate](https://devcenter.heroku.com/articles/inc
 - [restfeed-client-java](https://github.com/rest-feeds/restfeed-client-java)
 - [restfeed-client-spring](https://github.com/rest-feeds/restfeed-client-spring)
 
+
+## Change History
+
+__2021-11-29: Comply with CloudEvents__ 
+ 
+* Data Model: Add field `specversion`
+* Data Model: Rename `timestamp` to `time`
+* Data Model: Rename `resource` to `subject`
+* Data Model: `type` should be reverse-DNS name.
+* Media Type: Respond with `application/cloudevents-batch+json`
 
 
 ## More Information
