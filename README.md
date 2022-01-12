@@ -1,3 +1,7 @@
+__DEPRECATION NOTICE__:  
+___rest-feeds_ is deprecated and will not be further developed. Use [http-feeds](https://www.http-feeds.org) instead.__
+
+
 # rest-feeds
 
 Asynchronous data replication and event streaming with plain REST/HTTP.
